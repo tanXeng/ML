@@ -6,6 +6,7 @@ import config as config
 from torch.utils.data import Dataset, DataLoader
 import torch
 import torch.nn as nn
+from torch.optim.lr_scheduler import ReduceLROnPlateau  
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -89,7 +90,10 @@ class TranslationDataset(Dataset):
 def train_model(model, train_loader, val_loader, num_epochs=10, lr=1e-5):
     criterion = nn.CrossEntropyLoss(ignore_index=0)
     optimizer = torch.optim.AdamW(model.parameters(), lr=lr)
+    scheduler = ReduceLROnPlateau(optimizer, mode='min', patience=3, factor=0.1)
+
     i=1
+    best_val_loss = float('inf')
     for epoch in range(num_epochs):
         model.train()
         train_loss = 0
@@ -103,6 +107,7 @@ def train_model(model, train_loader, val_loader, num_epochs=10, lr=1e-5):
             
             optimizer.zero_grad()
             loss.backward()
+            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
             optimizer.step()
             train_loss += loss.item()
             
@@ -123,8 +128,20 @@ def train_model(model, train_loader, val_loader, num_epochs=10, lr=1e-5):
                 loss = criterion(outputs.contiguous().view(-1, outputs.size(-1)), 
                                 tgt_ids[:, 1:].contiguous().view(-1))
                 val_loss += loss.item()
-                
-        print(f'Validation Loss: {val_loss/len(val_loader):.4f}\n')
+
+            val_loss /= len(val_loader)
+        print(f'Validation Loss: {val_loss:.4f}\n')
+        
+        scheduler.step(val_loss)
+
+        if val_loss <= best_val_loss:
+            torch.save({
+            'model_state_dict': model.state_dict(),
+            'optimizer_state_dict': optimizer.state_dict(),
+            },
+            './translator.pth')
+            print('Saving model...')
+          
 
 # main training loop
 if __name__ == '__main__':
@@ -142,8 +159,4 @@ if __name__ == '__main__':
     
     train_model(model, train_loader, val_loader)
 
-    torch.save({
-    'model_state_dict': model.state_dict(),
-    'optimizer_state_dict': optimizer.state_dict(),
-    },
-    './translator.pth')
+    
