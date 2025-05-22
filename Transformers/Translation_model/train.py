@@ -8,31 +8,22 @@ import torch
 import torch.nn as nn
 from torch.optim.lr_scheduler import ReduceLROnPlateau  
 
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+# train_dataset = load_dataset('iwslt2017', 'iwslt2017-en-de', trust_remote_code=True, split='train')
+# val_dataset = load_dataset('iwslt2017', 'iwslt2017-en-de', trust_remote_code=True, split='validation')
+# test_dataset = load_dataset('iwslt2017', 'iwslt2017-en-de', trust_remote_code=True, split='test')
 
-tokenizer = AutoTokenizer.from_pretrained("t5-small")
-
-train_dataset = load_dataset('iwslt2017', 'iwslt2017-en-de', trust_remote_code=True, split='train')
-val_dataset = load_dataset('iwslt2017', 'iwslt2017-en-de', trust_remote_code=True, split='validation')
-test_dataset = load_dataset('iwslt2017', 'iwslt2017-en-de', trust_remote_code=True, split='test')
-
-print(f"Train dataset: {train_dataset}")
-print(f"Validation dataset: {val_dataset}")
-print(f"Test dataset: {test_dataset}")
-
-def prepare_data():
-    dataset = load_dataset('iwslt2017', 'iwslt2017-en-de')
-    train_df = pd.DataFrame(dataset['train']['translation'])
-    valid_df = pd.DataFrame(dataset['validation']['translation'])
-    test_df = pd.DataFrame(dataset['test']['translation'])
-    return train_df, valid_df, test_df
-
-train_df, val_df, test_df = prepare_data()
+# print(f"Train dataset: {train_dataset}")
+# print(f"Validation dataset: {val_dataset}")
+# print(f"Test dataset: {test_dataset}")
 
 def load_data(batch_size=32):
-    dataset = load_dataset('iwslt2017', 'iwslt2017-en-de')
-    tokenizer = AutoTokenizer.from_pretrained('t5-small')
-    
+    # dataset = load_dataset('iwslt2017', 'iwslt2017-en-de')
+    dataset = load_dataset("wmt14", "de-en")
+    print(dataset)
+
+    # tokenizer = AutoTokenizer.from_pretrained('t5-small')
+    tokenizer = AutoTokenizer.from_pretrained("Helsinki-NLP/opus-mt-en-de")
+
     train_df = pd.DataFrame(dataset['train']['translation'])
     val_df = pd.DataFrame(dataset['validation']['translation'])
     test_df = pd.DataFrame(dataset['test']['translation'])
@@ -87,16 +78,13 @@ class TranslationDataset(Dataset):
             'tgt_mask': tgt_enc['attention_mask'].squeeze()
         }
 
-def train_model(model, train_loader, val_loader, num_epochs=10, lr=1e-5):
+def train_model(model, train_loader, val_loader, optimizer, scheduler, best_val_loss=float('inf'), num_epochs=50, lr=1e-4):
     criterion = nn.CrossEntropyLoss(ignore_index=0)
-    optimizer = torch.optim.AdamW(model.parameters(), lr=lr)
-    scheduler = ReduceLROnPlateau(optimizer, mode='min', patience=3, factor=0.1)
 
-    i=1
-    best_val_loss = float('inf')
     for epoch in range(num_epochs):
         model.train()
         train_loss = 0
+        i=1
         for batch in train_loader:
             src_ids = batch['src_ids'].to(device)
             tgt_ids = batch['tgt_ids'].to(device)
@@ -111,7 +99,7 @@ def train_model(model, train_loader, val_loader, num_epochs=10, lr=1e-5):
             optimizer.step()
             train_loss += loss.item()
             
-            if i % 100 == 0:
+            if i % 1000 == 0:
                 print(f'     Batch {i}, Train Loss: {loss.item()}')
             i += 1
 
@@ -130,14 +118,17 @@ def train_model(model, train_loader, val_loader, num_epochs=10, lr=1e-5):
                 val_loss += loss.item()
 
             val_loss /= len(val_loader)
-        print(f'Validation Loss: {val_loss:.4f}\n')
+        print(f'Validation Loss: {val_loss:.4f}')
         
         scheduler.step(val_loss)
 
         if val_loss <= best_val_loss:
+            best_val_loss = val_loss
+
             torch.save({
             'model_state_dict': model.state_dict(),
             'optimizer_state_dict': optimizer.state_dict(),
+            'best_validation_loss': best_val_loss
             },
             './translator.pth')
             print('Saving model...')
@@ -145,6 +136,9 @@ def train_model(model, train_loader, val_loader, num_epochs=10, lr=1e-5):
 
 # main training loop
 if __name__ == '__main__':
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+    # tokenizer = AutoTokenizer.from_pretrained("t5-small")
     train_loader, val_loader, _, tokenizer = load_data()
     
     model = Transformer(
@@ -156,7 +150,21 @@ if __name__ == '__main__':
         d_ff=2048,
         max_seq_len=128
     ).to(device)
-    
-    train_model(model, train_loader, val_loader)
 
-    
+    optimizer = torch.optim.AdamW(model.parameters(), lr=1e-4)
+    scheduler = ReduceLROnPlateau(optimizer, mode='min', patience=1, factor=0.1)
+
+    # checkpoint = torch.load('./translator.pth')
+    # model.load_state_dict(checkpoint['model_state_dict'])
+    # optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+    # best_val_loss = checkpoint['best_validation_loss']
+
+    train_model(
+        model,
+        train_loader, 
+        val_loader, 
+        optimizer, 
+        scheduler,
+        # best_val_loss=best_val_loss,
+        num_epochs=200
+    )
