@@ -5,7 +5,7 @@ from transformers import AutoTokenizer
 import torch
 import torch.nn.functional as F
 
-def translate(input, tokenizer, model, max_len=128, k=10000, temperature=0.15):
+def translate(input, tokenizer, model, max_len=128, k=None, temperature=1):
     start_token_id = tokenizer.pad_token_id 
     end_token_id = tokenizer.eos_token_id  
     decoder_inputs_ids = torch.tensor(
@@ -14,7 +14,6 @@ def translate(input, tokenizer, model, max_len=128, k=10000, temperature=0.15):
         device=device
     ).unsqueeze(0).unsqueeze(1)
     encoder_inputs_ids = input['input_ids']
-    encoder_inputs_ids = encoder_inputs_ids
 
     for i in range(max_len):
         with torch.no_grad():
@@ -24,7 +23,8 @@ def translate(input, tokenizer, model, max_len=128, k=10000, temperature=0.15):
             )
 
         next_token_logits = outputs[:, -1, :] / temperature
-        # next_token_logits = torch.topk(next_token_logits, k, largest=True)[0]
+        if k:
+            next_token_logits = torch.topk(next_token_logits, k, largest=True)[0]
         probs = F.softmax(next_token_logits, dim=-1)
         next_token_id = torch.multinomial(probs, num_samples=1)
         
@@ -47,7 +47,9 @@ if __name__=='__main__':
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-    tokenizer = AutoTokenizer.from_pretrained("t5-small")
+    # tokenizer = AutoTokenizer.from_pretrained("t5-small")
+    tokenizer = AutoTokenizer.from_pretrained("Helsinki-NLP/opus-mt-en-de")
+
     vocab = tokenizer.get_vocab()
 
     inputs = str(sys.argv[1])
