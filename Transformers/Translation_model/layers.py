@@ -52,8 +52,8 @@ class FeedForward(nn.Module):
         self.d_model = d_model
         
         # GELU tends to perform better but is more computationally expensive than ReLU
-        self.gelu = nn.GELU()
-        # self.relu = nn.ReLU()
+        # self.gelu = nn.GELU()
+        self.relu = nn.ReLU()
         self.norm = nn.LayerNorm(d_model)
         self.dropout = nn.Dropout(dropout)
         self.W1 = nn.Linear(d_model, d_ff, bias=True) 
