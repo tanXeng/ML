@@ -6,12 +6,15 @@ import math
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 class Transformer(nn.Module):
-    def __init__(self, src_vocab_size, tgt_vocab_size, d_model=512, num_heads=8, 
-                 num_layers=6, d_ff=2048, max_seq_len=512, dropout=0.1):
+    def __init__(self, tokenizer, d_model=512, num_heads=8, 
+                 num_layers=6, d_ff=2048, max_seq_len=128, dropout=0.1):
         super().__init__()
+        self._init_weights()
         self.d_model = d_model
-        self.encoder_embed = nn.Embedding(src_vocab_size, d_model)
-        self.decoder_embed = nn.Embedding(tgt_vocab_size, d_model)
+        self.tokenizer = tokenizer
+        self.pad_token = tokenizer.pad_token_id 
+        self.encoder_embed = nn.Embedding(tokenizer.vocab_size, d_model)
+        self.decoder_embed = nn.Embedding(tokenizer.vocab_size, d_model)
         self.pos_encoding = PositionalEncoding(d_model, max_seq_len)
         
         self.encoder_layers = nn.ModuleList(
@@ -22,7 +25,7 @@ class Transformer(nn.Module):
             [DecoderLayer(d_model, num_heads, d_ff, dropout) for _ in range(num_layers)]
         )
             
-        self.fc_out = nn.Linear(d_model, tgt_vocab_size)
+        self.fc_out = nn.Linear(d_model, tokenizer.vocab_size)
         self.dropout = nn.Dropout(dropout)
         
     def _init_weights(self):
@@ -31,8 +34,8 @@ class Transformer(nn.Module):
                 nn.init.xavier_uniform_(p)
                 
     def generate_mask(self, src, tgt):
-        src_mask = (src != 0).unsqueeze(1).unsqueeze(2)
-        tgt_mask = (tgt != 0).unsqueeze(1).unsqueeze(3)
+        src_mask = (src != self.pad_token).unsqueeze(1).unsqueeze(2)
+        tgt_mask = (tgt != self.pad_token).unsqueeze(1).unsqueeze(3)
         seq_len = tgt.size(1)
         causal_mask = (1 - torch.triu(torch.ones(1, seq_len, seq_len), diagonal=1)).bool()
         tgt_mask = tgt_mask & causal_mask.to(device)
