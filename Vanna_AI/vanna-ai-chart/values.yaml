@@ -1,0 +1,50 @@
+settings:
+  Chatmodel: "deepseek/deepseek-chat-v3-0324:free"
+  Chatmodelbaseurl: "https://openrouter.ai/api/v1"
+  Chatmodelkey: "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"
+  Useinhousemodel: false # if set to false, openrouter model endpoints will be used
+  Database: "/app/Chinook.sqlite"
+  DatabasePath: "./db/"
+  DatabaseType: "sqlite"
+
+image:
+  repository: tanxeng/vanna-app # place your docker image here
+  pullPolicy: Always
+  tag: latest 
+
+service:
+  type: ClusterIP
+  port: 8084
+
+volumes:
+  - name: chromadb-storage
+    persistentVolumeClaim:
+      claimName: sh-vanna
+  - name: cache-volume
+    emptyDir: {}
+
+volumeMounts:
+  - name: chromadb-storage
+    mountPath: /app/db
+  - name: cache-volume
+    mountPath: /.cache
+
+resources:
+  requests: # min resources
+    cpu: "500m"
+    memory: "2Gi"
+  limits: # max resources
+    cpu: "1"
+    memory: "4Gi"
+
+#Platform related options
+ezua:
+  # enabled: false
+  # virtualService:
+  #   endpoint: ""
+  #   istioGateway: "istio-system/ezaf-gateway"
+
+  #Use next options in order to configure the application endpoint.
+  virtualService:
+    endpoint: "vanna-ai.${DOMAIN_NAME}"
+    istioGateway: "istio-system/ezaf-gateway"

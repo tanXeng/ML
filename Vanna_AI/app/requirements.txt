@@ -1,0 +1,5 @@
+vanna
+python-dotenv
+loguru
+llama-index-llms-openai-like
+fastapi
