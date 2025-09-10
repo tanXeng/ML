@@ -1,0 +1,30 @@
+Things to experiment:
+- Try higher lambda
+- Try higher learning rates
+	- make training more unstable, especially when the A and B parameters differ in magnitude. this can show learning rate robustness
+- Try different optimizers
+- Try different models/tasks	
+	- convergence is supposedly slow for bigger models using vanilla LoRA
+
+- Try using a scheduler
+
+
+Experiment_1:
+    Trained on SST-2 from the GLUE benchmark 
+
+    BATCH_SIZE = 16
+    LR = 2e-4
+    MAX_STEPS = 6000
+    DEVICE = 'cuda'
+    OPTIMIZER = AdamW(model.parameters(), lr=LR)
+    STEPS_BETWEEN_VALIDATION = 100 
+    LAMBDA = 0.2
+
+    lora_config = LoraConfig(
+    r=8,
+    lora_alpha=16,
+    target_modules=['query', 'value'],  
+    lora_dropout=0.1,
+    bias='none',
+    task_type=TaskType.SEQ_CLS  
+    )
