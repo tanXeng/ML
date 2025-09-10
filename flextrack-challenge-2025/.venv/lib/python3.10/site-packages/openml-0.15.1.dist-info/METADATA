@@ -1,0 +1,230 @@
+Metadata-Version: 2.2
+Name: openml
+Version: 0.15.1
+Summary: Python API for OpenML
+Author: Jan van Rijn, Arlind Kadra, Pieter Gijsbers, Neeratyoy Mallik, Sahithya Ravi, Andreas Müller, Joaquin Vanschoren , Frank Hutter
+Author-email: Matthias Feurer <feurerm@informatik.uni-freiburg.de>
+License: BSD 3-Clause License
+        
+        Copyright (c) 2014-2019, Matthias Feurer, Jan van Rijn, Andreas Müller, 
+        Joaquin Vanschoren and others.
+        All rights reserved.
+        
+        Redistribution and use in source and binary forms, with or without
+        modification, are permitted provided that the following conditions are met:
+        
+        * Redistributions of source code must retain the above copyright notice, this
+          list of conditions and the following disclaimer.
+        
+        * Redistributions in binary form must reproduce the above copyright notice,
+          this list of conditions and the following disclaimer in the documentation
+          and/or other materials provided with the distribution.
+        
+        * Neither the name of the copyright holder nor the names of its
+          contributors may be used to endorse or promote products derived from
+          this software without specific prior written permission.
+        
+        THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+        AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+        IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+        DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+        FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+        DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+        SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+        CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+        OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+        OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+        
+        License of the files CONTRIBUTING.md, ISSUE_TEMPLATE.md and 
+        PULL_REQUEST_TEMPLATE.md:
+        
+        Those files are modifications of the respecting templates in scikit-learn and
+        they are licensed under a New BSD license:
+        
+        New BSD License
+        
+        Copyright (c) 2007–2018 The scikit-learn developers.
+        All rights reserved.
+        
+        
+        Redistribution and use in source and binary forms, with or without
+        modification, are permitted provided that the following conditions are met:
+        
+          a. Redistributions of source code must retain the above copyright notice,
+             this list of conditions and the following disclaimer.
+          b. Redistributions in binary form must reproduce the above copyright
+             notice, this list of conditions and the following disclaimer in the
+             documentation and/or other materials provided with the distribution.
+          c. Neither the name of the Scikit-learn Developers  nor the names of
+             its contributors may be used to endorse or promote products
+             derived from this software without specific prior written
+             permission. 
+        
+        
+        THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+        AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+        IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+        ARE DISCLAIMED. IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE FOR
+        ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+        DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+        SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+        CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+        LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+        OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
+        DAMAGE.
+        
+Project-URL: home, https://openml.org/
+Project-URL: documentation, https://openml.github.io/openml-python/
+Project-URL: source, https://github.com/openml/openml-python
+Classifier: Intended Audience :: Science/Research
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Programming Language :: Python
+Classifier: Topic :: Software Development
+Classifier: Topic :: Scientific/Engineering
+Classifier: Operating System :: POSIX
+Classifier: Operating System :: Unix
+Classifier: Operating System :: MacOS
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: liac-arff>=2.4.0
+Requires-Dist: xmltodict
+Requires-Dist: requests
+Requires-Dist: scikit-learn>=0.18
+Requires-Dist: python-dateutil
+Requires-Dist: pandas>=1.0.0
+Requires-Dist: scipy>=0.13.3
+Requires-Dist: numpy>=1.6.2
+Requires-Dist: minio
+Requires-Dist: pyarrow
+Requires-Dist: tqdm
+Requires-Dist: packaging
+Provides-Extra: test
+Requires-Dist: nbconvert; extra == "test"
+Requires-Dist: jupyter_client; extra == "test"
+Requires-Dist: matplotlib; extra == "test"
+Requires-Dist: pytest; extra == "test"
+Requires-Dist: pytest-xdist; extra == "test"
+Requires-Dist: pytest-timeout; extra == "test"
+Requires-Dist: nbformat; extra == "test"
+Requires-Dist: oslo.concurrency; extra == "test"
+Requires-Dist: flaky; extra == "test"
+Requires-Dist: pre-commit; extra == "test"
+Requires-Dist: pytest-cov; extra == "test"
+Requires-Dist: pytest-rerunfailures; extra == "test"
+Requires-Dist: mypy; extra == "test"
+Requires-Dist: ruff; extra == "test"
+Provides-Extra: examples
+Requires-Dist: matplotlib; extra == "examples"
+Requires-Dist: jupyter; extra == "examples"
+Requires-Dist: notebook; extra == "examples"
+Requires-Dist: nbconvert; extra == "examples"
+Requires-Dist: nbformat; extra == "examples"
+Requires-Dist: jupyter_client; extra == "examples"
+Requires-Dist: ipython; extra == "examples"
+Requires-Dist: ipykernel; extra == "examples"
+Requires-Dist: seaborn; extra == "examples"
+Provides-Extra: docs
+Requires-Dist: sphinx>=3; extra == "docs"
+Requires-Dist: sphinx-gallery; extra == "docs"
+Requires-Dist: sphinx_bootstrap_theme; extra == "docs"
+Requires-Dist: numpydoc; extra == "docs"
+
+
+
+<div align="center">
+
+<div id="user-content-toc">
+  <ul align="center" style="list-style: none;">
+    <summary>
+      <img src="https://github.com/openml/openml.org/blob/master/app/public/static/svg/logo.svg" width="50" alt="OpenML Logo"/> 
+      <h1>OpenML-Python</h1>
+      <img src="https://github.com/openml/docs/blob/master/docs/img/python.png" width="50" alt="Python Logo"/>
+    </summary>
+  </ul>
+</div>
+
+## The Python API for a World of Data and More :dizzy:
+
+[![Latest Release](https://img.shields.io/github/v/release/openml/openml-python)](https://github.com/openml/openml-python/releases)
+[![Python Versions](https://img.shields.io/badge/python-3.8%20%7C%203.9%20%7C%203.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue)](https://pypi.org/project/openml/)
+[![Downloads](https://static.pepy.tech/badge/openml)](https://pepy.tech/project/openml)
+[![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
+<!-- Add green badges for CI and precommit -->
+
+[Installation](https://openml.github.io/openml-python/main/#how-to-get-openml-for-python) | [Documentation](https://openml.github.io/openml-python) | [Contribution guidelines](https://github.com/openml/openml-python/blob/develop/CONTRIBUTING.md)
+</div>
+
+OpenML-Python provides an easy-to-use and straightforward Python interface for [OpenML](http://openml.org), an online platform for open science collaboration in machine learning.
+It can download or upload data from OpenML, such as datasets and machine learning experiment results.
+
+## :joystick: Minimal Example
+
+Use the following code to get the [credit-g](https://www.openml.org/search?type=data&sort=runs&status=active&id=31) [dataset](https://docs.openml.org/concepts/data/):
+
+```python
+import openml
+
+dataset = openml.datasets.get_dataset("credit-g") # or by ID get_dataset(31)
+X, y, categorical_indicator, attribute_names = dataset.get_data(target="class")
+```
+
+Get a [task](https://docs.openml.org/concepts/tasks/) for [supervised classification on credit-g](https://www.openml.org/search?type=task&id=31&source_data.data_id=31):
+
+```python
+import openml
+
+task = openml.tasks.get_task(31)
+dataset = task.get_dataset()
+X, y, categorical_indicator, attribute_names = dataset.get_data(target=task.target_name)
+# get splits for the first fold of 10-fold cross-validation
+train_indices, test_indices = task.get_train_test_split_indices(fold=0)
+```
+
+Use an [OpenML benchmarking suite](https://docs.openml.org/concepts/benchmarking/) to get a curated list of machine-learning tasks:
+```python
+import openml
+
+suite = openml.study.get_suite("amlb-classification-all")  # Get a curated list of tasks for classification
+for task_id in suite.tasks:
+    task = openml.tasks.get_task(task_id)
+```
+
+## :magic_wand: Installation
+
+OpenML-Python is supported on Python 3.8 - 3.13 and is available on Linux, MacOS, and Windows.
+
+You can install OpenML-Python with:
+
+```bash
+pip install openml
+```
+
+## :page_facing_up: Citing OpenML-Python
+
+If you use OpenML-Python in a scientific publication, we would appreciate a reference to the following paper:
+
+[Matthias Feurer, Jan N. van Rijn, Arlind Kadra, Pieter Gijsbers, Neeratyoy Mallik, Sahithya Ravi, Andreas Müller, Joaquin Vanschoren, Frank Hutter<br/>
+**OpenML-Python: an extensible Python API for OpenML**<br/>
+Journal of Machine Learning Research, 22(100):1−5, 2021](https://www.jmlr.org/papers/v22/19-920.html)
+
+Bibtex entry:
+```bibtex
+@article{JMLR:v22:19-920,
+  author  = {Matthias Feurer and Jan N. van Rijn and Arlind Kadra and Pieter Gijsbers and Neeratyoy Mallik and Sahithya Ravi and Andreas Müller and Joaquin Vanschoren and Frank Hutter},
+  title   = {OpenML-Python: an extensible Python API for OpenML},
+  journal = {Journal of Machine Learning Research},
+  year    = {2021},
+  volume  = {22},
+  number  = {100},
+  pages   = {1--5},
+  url     = {http://jmlr.org/papers/v22/19-920.html}
+}
+```
